@@ -1,28 +1,21 @@
-// Import the ORM to create functions that will interact with the database.
-const orm = require('../config/orm.js');
-
-const burger = {
-    // Select all burger table entries
-    selectAll: cb => {
-        orm.selectAll('burgers', res => {
-            cb(res);
+module.exports = function (sequelize, DataTypes) {
+    // Define the Burger Sequelize model
+    var Burger = sequelize.define("Burger",
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
+            burger_name: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            devoured: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
+            }
         });
-    },
 
-    // The variables cols and vals are arrays
-    insertOne: (cols, vals, cb) => {
-        orm.insertOne('burgers', cols, vals, res => {
-            cb(res);
-        });
-    },
-
-    // The objColVals is an object specifying columns as object keys with associated values
-    updateOne: (objColVals, condition, cb) => {
-        orm.updateOne('burgers', objColVals, condition, res => {
-            cb(res);
-        });
-    }
+    return Burger;
 };
-
-// Export the database functions for the controller (burgerController.js).
-module.exports = burger;

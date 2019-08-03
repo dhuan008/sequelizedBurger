@@ -1,44 +1,71 @@
-const express = require('express');
-const router = express.Router();
+// Pull in the Burger model
+const db = require("../models");
 
-// Import the model (burger.js) to use its database functions.
-let burger = require('../models/burger.js');
-
-// Create all our routes and set up logic within those routes where required.
-router.get('/', (req, res) => {
-    burger.selectAll(data => {
-        const hbsObject = {
-            burgers: data
-        };
-        // console.log(hbsObject);
-        res.render('index', hbsObject);
+module.exports = app => {
+    // Retrieve the list of all burgers in the database
+    app.get('/', (req, res) => {
+        db.Burger.findAll({}).then(results => {
+            const hbsObject = {
+                burgers: results
+            };
+            console.log(hbsObject);
+            res.render('index', hbsObject);
+        }).catch(error => {
+            console.error(error);
+        });
     });
-});
 
-router.post('/burgers', (req, res) => {
-    burger.insertOne([
-        'burger_name'
-    ],
-        [
-            req.body.burger_name
-        ], data => {
+    // Create a new burger entry
+    app.post('/burgers', (req, res) => {
+        const burger = req.body;
+        console.log('Burger: ' + burger);
+        db.Burger.create({
+            burger_name: burger.burger_name,
+            devoured: burger.devoured
+        }).then(() => {
             res.redirect('/');
+        }).catch(error => {
+            console.error(error);
         });
-});
+    });
 
-router.post('/burgers/:id', (req, res) => {
-    let condition = `id = ${req.params.id}`;
-
-    console.log(condition);
-
-    burger.updateOne({
-        devoured: true
-    },
-        condition,
-        data => {
-            res.redirect('/');
+    app.post('/burgers/:id', (req, res) => {
+        db.Burger.update({
+            devoured: true
+        },
+            {
+                where: {
+                    id: req.params.id
+                }
+            }
+        ).then(result => {
+            if (result.changedRows === 0) {
+                // error id must not exist
+                return res.status(404).end();
+            } else {
+                res.redirect('/');
+            }
+        }).catch(error => {
+            console.error(error);
         });
-});
+    });
 
-// Export routes for server.js to use.
-module.exports = router;
+    app.delete('/burgers/:id', (req, res) => {
+        db.Burger.destroy({
+            where: {
+                id: req.params.id
+            }
+        }).then(result => {
+            if (result.affectedRows === 0) {
+                // error id must not exist
+                return res.status(404).end();
+            } else {
+                res.redirect('/');
+            }
+        }).catch(error => {
+            console.error(error);
+        });
+    });
+
+
+};

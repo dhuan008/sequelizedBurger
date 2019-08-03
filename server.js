@@ -1,5 +1,5 @@
 const express = require('express');
-
+const db = require('./models/');
 const PORT = process.env.PORT || 8081;
 
 const app = express();
@@ -18,10 +18,12 @@ app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 
 // Import routes and give the server access to them
-const routes = require('./controllers/burgers_controller.js');
+require('./controllers/burgers_controller.js')(app);
 
-app.use('/', routes);
-
-app.listen(PORT, () => {
-    console.log(`App now listening at localhost: ${PORT}`);
+db.sequelize.sync().then(() => {
+    app.listen(PORT, () => {
+        console.log(`App now listening at localhost: ${PORT}`);
+    });
+}).catch(error => {
+    console.error(error);
 });

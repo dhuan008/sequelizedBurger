@@ -1,10 +1,10 @@
-# burger
+# sequelizedBurger
 
-A burger logger with MySQL, Node, Express, Handlebars and a homemade ORM (yum!).
+A burger logger with MySQL, Node, Express, Handlebars and a sequelize (yum!).
 
 ## Demo
 
-https://lit-tor-84301.herokuapp.com/
+https://vast-tundra-57133.herokuapp.com/
 
 ## Installation
 
